@@ -1,19 +1,5 @@
-// Copyright 2022 The TCell Authors
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use file except in compliance with the License.
-// You may obtain a copy of the license at
-//
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// RiverRun AKA Pitfall Clone
 
-// Playfield related functions
-//
 // Playfield Array Legend
 // 0 - Blank
 // 1 - Wall 1
@@ -41,7 +27,7 @@ import (
 var playerXpos int = 10 // Player Initial X Position
 var playerYpos int = 1  // Player Initial Y Position
 
-var playfieldXoffset int = 20 // Playfield X Offset
+var playfieldXoffset int = 19 // Playfield X Offset
 var playfieldYoffset int = 2  // Playfield Y Offset
 
 var playfieldArray [20][20]int // 20x20 playfield array

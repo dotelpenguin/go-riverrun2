@@ -19,7 +19,15 @@ func playfieldBoxes(s tcell.Screen) {
 	var pad40 string = strings.Repeat(".", 40)
 	printStr(s, 0, 0, style, pad40)
 	// End Debug Ruler
+
+	// Draw the playfield box
 	drawBox(s, playfieldXoffset-1, playfieldYoffset-1, playfieldXoffset+20, playfieldYoffset+20, style)
+
+	// Draw the Score box
+	drawBox(s, 0, playfieldYoffset-1, 16, playfieldYoffset+4, style)
+
+	// Draw the Info box
+	drawBox(s, 0, playfieldYoffset+5, 16, playfieldYoffset+20, style)
 
 }
 
