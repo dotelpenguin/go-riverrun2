@@ -23,3 +23,13 @@ func gameCheckCollision() (bool, string) {
 	}
 	return false, "None"
 }
+
+func gameCheckBoundries() bool {
+	// Check if player is out of bounds
+	if playerXpos < 0 || playerXpos > 19 || playerYpos < 0 || playerYpos > 19 {
+		return true
+	}
+	return false
+	// Check if playfieldArray is out of bounds
+	// todo: implement this
+}

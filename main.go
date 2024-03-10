@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -32,10 +33,16 @@ var playfieldYoffset int = 2  // Playfield Y Offset
 
 var playfieldArray [20][20]int // 20x20 playfield array
 
-var playfieldTheme [10][10]string // 10x10 playfield theme array
+var playfieldTheme [10][10]string // 10x10 playfield theme array TODO: Implement this
 
-func main() { // Main function LOOP
+func main() {
+	initializeGame()
+	// Menu Here
+	gameRun()
+}
 
+func gameRun() { // Main function LOOP
+	// Initialize the screen
 	s, e := tcell.NewScreen()
 	if e != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", e)
@@ -51,7 +58,6 @@ func main() { // Main function LOOP
 		Foreground(tcell.ColorWhite)
 	s.SetStyle(defStyle)
 
-	playfieldBuild() // Build the initial playfield array
 	playfieldBoxes(s)
 
 	for { // Game Loop
@@ -66,23 +72,51 @@ func main() { // Main function LOOP
 				os.Exit(0)
 			case tcell.KeyRight:
 				playerXpos++
+				if gameCheckBoundries() { // Check if player is out of bounds
+					playerXpos--
+				}
 				s.Show()
 			case tcell.KeyLeft:
 				playerXpos--
+				if gameCheckBoundries() { // Check if player is out of bounds
+					playerXpos++
+				}
 				s.Show()
 			case tcell.KeyUp:
 				playerYpos--
+				if gameCheckBoundries() { // Check if player is out of bounds
+					playerYpos++
+				}
 				s.Show()
 			case tcell.KeyDown:
 				playerYpos++
+				if gameCheckBoundries() { // Check if player is out of bounds
+					playerYpos--
+				}
 				s.Show()
 			}
 			style := tcell.StyleDefault.Foreground(tcell.ColorWhite.TrueColor()).Background(tcell.ColorBlack)
 			collision, message := gameCheckCollision()
-			debugStr1 := fmt.Sprintf("Key: %d - %d x %d", ev.Key(), playerXpos, playerYpos)
-			debugStr2 := fmt.Sprintf("Collision: %s, %s", message, strconv.FormatBool(collision))
+			debugStr1 := fmt.Sprintf("Key: %d", ev.Key())
+			debugStr2 := fmt.Sprintf("Player: %d x %d  Array: ? x ?", playerXpos, playerYpos)
+			debugStr3 := fmt.Sprintf("Collision: %s, %s", message, strconv.FormatBool(collision))
 			printStr(s, playfieldXoffset+25, playfieldYoffset+1, style, debugStr1)
 			printStr(s, playfieldXoffset+25, playfieldYoffset+2, style, debugStr2)
+			printStr(s, playfieldXoffset+25, playfieldYoffset+3, style, debugStr3)
 		}
 	}
+}
+
+func initializeGame() {
+	fmt.Println("Checking for game initialization.") // Check game requirements
+	fmt.Println("Checking terminal size...........") // Check terminal size
+	fmt.Println("Checking terminal encoding.......") // Check terminal encoding
+	fmt.Println("Checking terminal speed..........") // Check terminal speed
+	fmt.Println("Loading game assets..............") // Load game assets and check for errors
+	fmt.Println("Loading dropfile.................") // Load dropfile and check for errors door.sys, chain.txt, door32.sys, doorinfo.def
+	fmt.Println("Checking for other players.......") // Check for other players socket? pipe? file?
+	fmt.Println("Initializing game................") // Initialize game
+	playfieldBuild()                                 // Build the initial playfield array
+
+	time.Sleep(2 * time.Second)
 }
