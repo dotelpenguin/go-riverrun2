@@ -14,10 +14,12 @@ func playfieldBoxes(s tcell.Screen) {
 	style := tcell.StyleDefault.Foreground(tcell.ColorRed.TrueColor()).Background(tcell.ColorBlack)
 	var pad80 string = strings.Repeat(":", 80)
 	printStr(s, 0, 0, style, pad80)
+	printStr(s, 55, 0, style, "PC 80 Field")
 
 	style = tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack)
 	var pad40 string = strings.Repeat(".", 40)
 	printStr(s, 0, 0, style, pad40)
+	printStr(s, 15, 0, style, "C64 40 Field")
 	// End Debug Ruler
 
 	// Draw the playfield box
@@ -29,9 +31,40 @@ func playfieldBoxes(s tcell.Screen) {
 	// Draw the Info box
 	drawBox(s, 0, playfieldYoffset+5, 16, playfieldYoffset+20, style)
 
+	// Draw the debug/artwork box. Disabled in 40 column mode
+	drawBox(s, playfieldXoffset+22, playfieldYoffset-1, 79, playfieldYoffset+20, style)
+}
+
+func playfieldDebug(s tcell.Screen) {
+	// Print the debug info
+	style := tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack)
+	drawBox(s, playfieldXoffset+22, playfieldYoffset-1, 79, playfieldYoffset+20, style)
+
+	// Lets find a better way to do this
+	var pad35 string = strings.Repeat(" ", 35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+2, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+3, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+4, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+5, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+6, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+7, style, pad35)
+	// End of better way
+
+	collision, message := gameCheckCollision()
+	printStr(s, playfieldXoffset+25, playfieldYoffset+1, style, "Debug Info")
+	printStr(s, playfieldXoffset+25, playfieldYoffset+2, style, "Array Element: "+strconv.Itoa(playfieldArray[playerYpos][playerXpos]))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+3, style, "Collision: "+strconv.FormatBool(collision))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+4, style, "Message: "+message)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+5, style, "Player X: "+strconv.Itoa(playerXpos))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+6, style, "Player Y: "+strconv.Itoa(playerYpos))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+7, style, "Speed: "+strconv.Itoa(gameSpeed))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+8, style, "Level: "+strconv.Itoa(gameLevel))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+9, style, "Mode: "+strconv.Itoa(gameMode))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+10, style, "Start: "+strconv.FormatBool(gameStart))
 }
 
 func drawBox(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style) {
+	// Double check to see if there isn't a native function for this.
 	// Draw the top and bottom
 	for x := x1; x <= x2; x++ {
 		s.SetContent(x, y1, '-', nil, style)
@@ -65,7 +98,7 @@ func printStr(s tcell.Screen, x, y int, style tcell.Style, str string) {
 	}
 }
 
-func playfieldBuild() {
+func playfieldBuild() { // Initial Playfield Array + Title Screen
 	playfieldGrid := `
 	12344444444444444321
 	11234444444444444321
@@ -86,7 +119,7 @@ func playfieldBuild() {
 	11111234444444321111
 	11111123499943211111
 	11111234444444321111
-	11111123444444432111` // Add more numbers to fill the 2D array
+	11111123444444432111` // todo: implement theme/assets from file
 
 	// Dirty remove of non Integers Characters
 	playfieldGrid = strings.ReplaceAll(playfieldGrid, "\n", "")
@@ -96,13 +129,11 @@ func playfieldBuild() {
 	index := 0
 	for i := 0; i < 20; i++ {
 		for j := 0; j < 20; j++ {
-
 			num, err := strconv.Atoi(string(playfieldGrid[index]))
 			if err != nil {
 				panic(err)
 			}
 			playfieldArray[i][j] = num
-
 			index++
 		}
 	}
@@ -114,7 +145,7 @@ func playfieldDisplay(s tcell.Screen) {
 	for i := 0; i < 20; i++ {
 		for j := 0; j < 20; j++ {
 			colorCode = playfieldArray[i][j]
-			// Set color based on colorCode
+			// Set color based on colorCode. todo: implement theme/assets from file
 			switch colorCode {
 			case 0:
 				style := tcell.StyleDefault.Foreground(tcell.ColorBlack.TrueColor()).Background(tcell.ColorBlack)
@@ -155,5 +186,13 @@ func playfieldDisplay(s tcell.Screen) {
 			s.Show()
 		}
 
+	}
+}
+
+func playfieldGenerateNewLine() { // Generates new line for the playfield and moves everything up
+	for i := 1; i < 20; i++ {
+		for j := 0; j < 20; j++ {
+			playfieldArray[i-1][j] = playfieldArray[i][j]
+		}
 	}
 }

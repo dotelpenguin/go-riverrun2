@@ -17,7 +17,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/gdamore/tcell/v2"
@@ -35,13 +34,19 @@ var playfieldArray [20][20]int // 20x20 playfield array
 
 var playfieldTheme [10][10]string // 10x10 playfield theme array TODO: Implement this
 
-func main() {
-	initializeGame()
-	// Menu Here
-	gameRun()
-}
+var wallLeftboundry int = 0   // Wall Left Boundry
+var wallRightboundry int = 19 // Wall Right Boundry
+var wallMinwidth int = 10     // Wall Minimum Width
+var wallMaxwidth int = 15     // Wall Maximum Width
 
-func gameRun() { // Main function LOOP
+var gameMode int = 0       // Game Mode
+var gameStart bool = false // Game Run
+var gameLevel int = 1      // Game Level
+var gameSpeed int = 1      // Game Speed
+
+var debug bool = true // Debug mode
+
+func main() {
 	// Initialize the screen
 	s, e := tcell.NewScreen()
 	if e != nil {
@@ -58,51 +63,54 @@ func gameRun() { // Main function LOOP
 		Foreground(tcell.ColorWhite)
 	s.SetStyle(defStyle)
 
+	initializeGame()
+	go gameLoop(s) // Start the background game loop
+	playfieldBoxes(s)
+
+	menuDisplay(s)
+	gameRun(s) // Remove me after menu is implemented
+}
+
+func gameRun(s tcell.Screen) { // Main function LOOP
+
 	playfieldBoxes(s)
 
 	for { // Game Loop
-		playfieldDisplay(s)
 		switch ev := s.PollEvent().(type) {
 		case *tcell.EventResize:
 			s.Sync()
 		case *tcell.EventKey:
 			switch ev.Key() {
 			case tcell.KeyEscape:
-				s.Fini()
-				os.Exit(0)
+				gameStart = false
+				menuDisplay(s)
 			case tcell.KeyRight:
 				playerXpos++
 				if gameCheckBoundries() { // Check if player is out of bounds
 					playerXpos--
 				}
-				s.Show()
+				playfieldDisplay(s)
 			case tcell.KeyLeft:
 				playerXpos--
 				if gameCheckBoundries() { // Check if player is out of bounds
 					playerXpos++
 				}
-				s.Show()
+				playfieldDisplay(s)
 			case tcell.KeyUp:
 				playerYpos--
 				if gameCheckBoundries() { // Check if player is out of bounds
 					playerYpos++
 				}
-				s.Show()
+				playfieldDisplay(s)
 			case tcell.KeyDown:
 				playerYpos++
 				if gameCheckBoundries() { // Check if player is out of bounds
 					playerYpos--
 				}
-				s.Show()
+				playfieldDisplay(s)
+			default:
+				continue
 			}
-			style := tcell.StyleDefault.Foreground(tcell.ColorWhite.TrueColor()).Background(tcell.ColorBlack)
-			collision, message := gameCheckCollision()
-			debugStr1 := fmt.Sprintf("Key: %d", ev.Key())
-			debugStr2 := fmt.Sprintf("Player: %d x %d  Array: ? x ?", playerXpos, playerYpos)
-			debugStr3 := fmt.Sprintf("Collision: %s, %s", message, strconv.FormatBool(collision))
-			printStr(s, playfieldXoffset+25, playfieldYoffset+1, style, debugStr1)
-			printStr(s, playfieldXoffset+25, playfieldYoffset+2, style, debugStr2)
-			printStr(s, playfieldXoffset+25, playfieldYoffset+3, style, debugStr3)
 		}
 	}
 }

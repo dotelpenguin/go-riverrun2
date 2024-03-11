@@ -1,5 +1,11 @@
 package main
 
+import (
+	"time"
+
+	"github.com/gdamore/tcell/v2"
+)
+
 func gameCheckCollision() (bool, string) {
 	switch playfieldArray[playerYpos][playerXpos] {
 	case 1:
@@ -32,4 +38,33 @@ func gameCheckBoundries() bool {
 	return false
 	// Check if playfieldArray is out of bounds
 	// todo: implement this
+}
+
+var quit = make(chan bool)
+
+func gameLoop(s tcell.Screen) { // Background Game Loop
+	for {
+		select {
+		case <-quit:
+			return
+		default:
+			if gameStart {
+				playfieldGenerateNewLine()
+				time.Sleep(200 * time.Millisecond) // Pause for 200 milliseconds
+				playfieldDisplay(s)
+				collision, message := gameCheckCollision()
+				if collision {
+					gameStart = false
+					style := tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack)
+					// Insert game over function here
+					printStr(s, playfieldXoffset+2, playfieldYoffset+4, style, "Message: "+message)
+					s.Show()
+				}
+				gameCheckCollision()
+			}
+			if debug {
+				playfieldDebug(s)
+			}
+		}
+	}
 }
