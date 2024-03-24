@@ -82,7 +82,6 @@ func main() {
 
 	go gameLoop(s) // Start the background game loop
 	playfieldBoxes(s)
-
 	for {
 		menuDisplay(s)
 	}
@@ -100,7 +99,9 @@ func gameRun(s tcell.Screen) { // Main function LOOP
 			switch ev.Key() {
 			case tcell.KeyEscape:
 				gameStart = false
+				s.Sync()
 				menuDisplay(s)
+				return
 			case tcell.KeyRight:
 				playerXpos++
 				if gameCheckBoundries() { // Check if player is out of bounds

@@ -42,28 +42,14 @@ func playfieldDebug(s tcell.Screen) {
 	drawBox(s, playfieldXoffset+22, playfieldYoffset-1, 79, playfieldYoffset+20, style)
 
 	// Lets find a better way to do this
-	var pad35 string = strings.Repeat(" ", 35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+2, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+3, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+4, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+5, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+6, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+7, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+8, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+9, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+10, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+11, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+12, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+13, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+14, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+15, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+16, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+17, style, pad35)
-	printStr(s, playfieldXoffset+25, playfieldYoffset+18, style, pad35)
+	var padDebug string = strings.Repeat(" ", 35)
 
-	// End of better way
+	for i := 0; i < 20; i++ {
+		printStr(s, playfieldXoffset+25, playfieldYoffset+i, style, padDebug)
+	}
+	s.Show()
 
-	collision, message := gameCheckCollision()
+	collision, message, value := gameCheckCollision()
 	printStr(s, playfieldXoffset+25, playfieldYoffset+1, style, "Debug Info")
 	printStr(s, playfieldXoffset+25, playfieldYoffset+2, style, "Array Element: "+strconv.Itoa(playfieldArray[playerYpos][playerXpos]))
 	printStr(s, playfieldXoffset+25, playfieldYoffset+3, style, "Collision: "+strconv.FormatBool(collision))
@@ -82,6 +68,7 @@ func playfieldDebug(s tcell.Screen) {
 	printStr(s, playfieldXoffset+25, playfieldYoffset+16, style, "River Min Width: "+strconv.Itoa(riverMinwidth))
 	printStr(s, playfieldXoffset+25, playfieldYoffset+17, style, "River Max Width: "+strconv.Itoa(riverMaxwidth))
 	printStr(s, playfieldXoffset+25, playfieldYoffset+18, style, "Govenor Algo: "+strconv.Itoa(gamescoreAlgo))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+19, style, "Value: "+strconv.Itoa(value))
 	printStr(s, playfieldXoffset, playfieldYoffset+20, style, ""+padLine)
 
 }

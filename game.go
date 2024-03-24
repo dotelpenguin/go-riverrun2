@@ -6,28 +6,28 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-func gameCheckCollision() (bool, string) {
+func gameCheckCollision() (bool, string, int) {
 	switch playfieldArray[playerYpos][playerXpos] {
 	case 1:
-		return true, "Wall 1"
+		return true, "Wall 1", 0
 	case 2:
-		return true, "Wall 2"
+		return true, "Wall 2", 0
 	case 3:
-		return true, "Wall 3"
+		return true, "Wall 3", 0
 	case 4:
-		return false, "Water 1"
+		return false, "Water 1", 1
 	case 5:
-		return true, "Obstacle 1"
+		return true, "Obstacle 1", -50
 	case 6:
-		return true, "Obstacle 2"
+		return true, "Obstacle 2", -100
 	case 7:
-		return true, "Bonus 1"
+		return true, "Bonus 1", 100
 	case 8:
-		return true, "Bonus 2"
+		return true, "Bonus 2", 200
 	case 9:
-		return true, "Finish"
+		return true, "Finish", 500
 	}
-	return false, "None"
+	return false, "None", 0
 }
 
 func gameCheckBoundries() bool {
@@ -47,19 +47,22 @@ func gameLoop(s tcell.Screen) { // Background Game Loop
 			if gameStart {
 				time.Sleep(time.Duration(200-(gamescoreAlgo*10)) * time.Millisecond) // Pause for 200 milliseconds - gamespeedalgo
 				playfieldDisplay(s)
-				collision, message := gameCheckCollision()
+				collision, message, value := gameCheckCollision()
 				if collision {
-					//gameStart = false
+					if value == 0 {
+						gameStart = false
+					}
+					gameScore += value
 					style := tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack)
-					// Insert game over function here
+
 					printStr(s, playfieldXoffset+2, playfieldYoffset+4, style, "Message: "+message)
 					s.Show()
 				}
 				gameAdvance()
 				playfieldUpdateStatus(s)
-			}
-			if debug {
-				playfieldDebug(s)
+				if debug {
+					playfieldDebug(s)
+				}
 			}
 		}
 	}
