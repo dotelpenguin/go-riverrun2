@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/gdamore/tcell/v2"
 )
@@ -10,14 +12,22 @@ func menuDisplay(s tcell.Screen) {
 	//playfieldDisplay(s)
 	style := tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack)
 
+	var padMenu string = strings.Repeat(" ", 19)
+
+	for i := 0; i < 10; i++ {
+		printStr(s, playfieldXoffset+1, playfieldYoffset+i, style, padMenu) // Your code here...
+	}
+
+	playfieldBoxes(s)
 	printStr(s, playfieldXoffset+1, playfieldYoffset+1, style, "==================")
-	printStr(s, playfieldXoffset+8, playfieldYoffset+2, style, "Menu")
+	printStr(s, playfieldXoffset+1, playfieldYoffset+2, style, "       Menu")
 	printStr(s, playfieldXoffset+1, playfieldYoffset+3, style, "==================")
-	printStr(s, playfieldXoffset+2, playfieldYoffset+5, style, "1: Start Game")
-	printStr(s, playfieldXoffset+2, playfieldYoffset+6, style, "2: Game Mode")
-	printStr(s, playfieldXoffset+2, playfieldYoffset+7, style, "3: Game Level")
-	printStr(s, playfieldXoffset+2, playfieldYoffset+8, style, "4: Game Speed")
-	printStr(s, playfieldXoffset+2, playfieldYoffset+9, style, "Q: Quit")
+	printStr(s, playfieldXoffset+1, playfieldYoffset+5, style, "1: Start: ")
+	printStr(s, playfieldXoffset+1, playfieldYoffset+6, style, "2: Mode: ")
+	printStr(s, playfieldXoffset+1, playfieldYoffset+7, style, "3: Level: ")
+	printStr(s, playfieldXoffset+1, playfieldYoffset+8, style, "4: Speed: ")
+	printStr(s, playfieldXoffset+1, playfieldYoffset+9, style, "5: Debug: "+strconv.FormatBool(debug))
+	printStr(s, playfieldXoffset+1, playfieldYoffset+10, style, "Q: Quit")
 
 	playfieldUpdateStatus(s)
 	s.Show()
@@ -35,6 +45,9 @@ func menuDisplay(s tcell.Screen) {
 				case 'q':
 					s.Fini()
 					os.Exit(0)
+				case '5':
+					debug = !debug
+					return
 				default:
 					continue
 				}

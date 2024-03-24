@@ -35,7 +35,7 @@ var playfieldArray [20][20]int // 20x20 playfield array
 
 var playfieldTheme [10][10]string // 10x10 playfield theme array TODO: Implement this
 
-var riverLeftboundry int = 0   // River Left Boundry
+var riverLeftboundry int = 5   // River Left Boundry
 var riverRightboundry int = 18 // River Right Boundry
 var riverWidth int = 10        // River Width
 var riverMinwidth int = 12     // River Minimum Width
@@ -55,7 +55,7 @@ var gameSeed int64 = 0     // Game Seed
 var gameScore int = 0      // Game Score
 var gamescoreAlgo int = 0  // Game Last Score
 
-var debug bool = true // Debug mode
+var debug bool = false // Debug mode
 
 var quit = make(chan bool)
 
@@ -83,8 +83,9 @@ func main() {
 	go gameLoop(s) // Start the background game loop
 	playfieldBoxes(s)
 
-	menuDisplay(s)
-	// gameRun(s) // Remove me after menu is implemented
+	for {
+		menuDisplay(s)
+	}
 }
 
 func gameRun(s tcell.Screen) { // Main function LOOP

@@ -140,9 +140,9 @@ func playfieldBuild() { // Initial Playfield Array + Title Screen
 	11111112344444443211
 	11111123464444432111
 	11111234444444321111
-	11111123499943211111
-	11111234444444321111
-	11111123444444432111` // todo: implement theme/assets from file
+	11112344444444321111
+	11234444444444321111
+	12344444444444432111` // todo: implement theme/assets from file
 
 	// Dirty remove of non Integers Characters
 	playfieldGrid = strings.ReplaceAll(playfieldGrid, "\n", "")
@@ -218,7 +218,6 @@ func playfieldGenerateNewLine() { // Generates new line for the playfield and mo
 		}
 	}
 	// Generate Max width of river +/1 a max of 2 Spaces
-	// Function to generate the river
 	switch rand.Intn(3) {
 	case 0:
 		riverWidth++
@@ -271,7 +270,6 @@ func playfieldGenerateNewLine() { // Generates new line for the playfield and mo
 	padLine = padLeftriver + padRiver + padRightriver
 	padLength = len(padLine)
 
-	// Generate the obstacles, include 2 obstacle types, Randomly 5% chance
 	// Function to generate the obstacles
 
 	// Convert the padLine string into the last row of the playfieldArray
@@ -284,6 +282,29 @@ func playfieldGenerateNewLine() { // Generates new line for the playfield and mo
 		playfieldArray[19][j] = num
 		index++
 	}
+
+	// Generate the obstacles, include 2 obstacle types, Randomly 5% chance
+	if rand.Intn(100) < 5 {
+		// Generate the Obstacle 1
+		obstacle1X := rand.Intn(riverWidth)
+		playfieldArray[19][obstacle1X+riverLeftboundry] = 5
+	}
+	if rand.Intn(100) < 5 {
+		// Generate the Obstacle 2
+		obstacle1X := rand.Intn(riverWidth)
+		playfieldArray[19][obstacle1X+riverLeftboundry] = 6
+	}
+	if rand.Intn(100) < 5 {
+		// Generate the Bonus 1
+		obstacle1X := rand.Intn(riverWidth)
+		playfieldArray[19][obstacle1X+riverLeftboundry] = 7
+	}
+	if rand.Intn(100) < 5 {
+		// Generate the Bonus 2
+		obstacle1X := rand.Intn(riverWidth)
+		playfieldArray[19][obstacle1X+riverLeftboundry] = 8
+	}
+
 }
 
 func playfieldUpdateStatus(s tcell.Screen) {
