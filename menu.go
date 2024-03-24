@@ -19,6 +19,9 @@ func menuDisplay(s tcell.Screen) {
 	printStr(s, playfieldXoffset+2, playfieldYoffset+8, style, "4: Game Speed")
 	printStr(s, playfieldXoffset+2, playfieldYoffset+9, style, "Q: Quit")
 
+	playfieldUpdateStatus(s)
+	s.Show()
+
 	for {
 		switch mev := s.PollEvent().(type) {
 		case *tcell.EventKey:
@@ -27,6 +30,8 @@ func menuDisplay(s tcell.Screen) {
 				switch mev.Rune() {
 				case '1':
 					gameStart = true
+					gameScore = 0
+					gameRun(s)
 				case 'q':
 					s.Fini()
 					os.Exit(0)

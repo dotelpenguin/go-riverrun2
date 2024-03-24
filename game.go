@@ -36,11 +36,7 @@ func gameCheckBoundries() bool {
 		return true
 	}
 	return false
-	// Check if playfieldArray is out of bounds
-	// todo: implement this
 }
-
-var quit = make(chan bool)
 
 func gameLoop(s tcell.Screen) { // Background Game Loop
 	for {
@@ -49,22 +45,37 @@ func gameLoop(s tcell.Screen) { // Background Game Loop
 			return
 		default:
 			if gameStart {
-				playfieldGenerateNewLine()
-				time.Sleep(200 * time.Millisecond) // Pause for 200 milliseconds
+				time.Sleep(time.Duration(200-(gamescoreAlgo*10)) * time.Millisecond) // Pause for 200 milliseconds - gamespeedalgo
 				playfieldDisplay(s)
 				collision, message := gameCheckCollision()
 				if collision {
-					gameStart = false
+					//gameStart = false
 					style := tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack)
 					// Insert game over function here
 					printStr(s, playfieldXoffset+2, playfieldYoffset+4, style, "Message: "+message)
 					s.Show()
 				}
-				gameCheckCollision()
+				gameAdvance()
+				playfieldUpdateStatus(s)
 			}
 			if debug {
 				playfieldDebug(s)
 			}
 		}
 	}
+}
+
+func gameAdvance() { // Advance the game steps + adjust difficulty
+	gameScore++
+	gamescoreAlgo = gameScore / 100
+	riverMinwidth = 12 - gamescoreAlgo
+	riverMaxwidth = 16 - gamescoreAlgo
+	if riverMinwidth < 3 {
+		riverMinwidth = 3
+		riverMaxwidth = 5
+	}
+	if gamescoreAlgo > 20 {
+		gamescoreAlgo = 20
+	}
+	playfieldGenerateNewLine()
 }

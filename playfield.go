@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"strconv"
 	"strings"
 
@@ -48,6 +49,18 @@ func playfieldDebug(s tcell.Screen) {
 	printStr(s, playfieldXoffset+25, playfieldYoffset+5, style, pad35)
 	printStr(s, playfieldXoffset+25, playfieldYoffset+6, style, pad35)
 	printStr(s, playfieldXoffset+25, playfieldYoffset+7, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+8, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+9, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+10, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+11, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+12, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+13, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+14, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+15, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+16, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+17, style, pad35)
+	printStr(s, playfieldXoffset+25, playfieldYoffset+18, style, pad35)
+
 	// End of better way
 
 	collision, message := gameCheckCollision()
@@ -57,10 +70,20 @@ func playfieldDebug(s tcell.Screen) {
 	printStr(s, playfieldXoffset+25, playfieldYoffset+4, style, "Message: "+message)
 	printStr(s, playfieldXoffset+25, playfieldYoffset+5, style, "Player X: "+strconv.Itoa(playerXpos))
 	printStr(s, playfieldXoffset+25, playfieldYoffset+6, style, "Player Y: "+strconv.Itoa(playerYpos))
-	printStr(s, playfieldXoffset+25, playfieldYoffset+7, style, "Speed: "+strconv.Itoa(gameSpeed))
-	printStr(s, playfieldXoffset+25, playfieldYoffset+8, style, "Level: "+strconv.Itoa(gameLevel))
-	printStr(s, playfieldXoffset+25, playfieldYoffset+9, style, "Mode: "+strconv.Itoa(gameMode))
-	printStr(s, playfieldXoffset+25, playfieldYoffset+10, style, "Start: "+strconv.FormatBool(gameStart))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+7, style, "River Left Boundry: "+strconv.Itoa(riverLeftboundry))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+8, style, "River Right Boundry: "+strconv.Itoa(riverRightboundry))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+9, style, "Length: "+strconv.Itoa(padLength))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+10, style, "Speed: "+strconv.Itoa(gameSpeed))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+11, style, "Level: "+strconv.Itoa(gameLevel))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+12, style, "Mode: "+strconv.Itoa(gameMode))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+13, style, "Start: "+strconv.FormatBool(gameStart))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+14, style, "Seed: "+strconv.FormatInt(gameSeed, 10))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+15, style, "River Width: "+strconv.Itoa(riverWidth))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+16, style, "River Min Width: "+strconv.Itoa(riverMinwidth))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+17, style, "River Max Width: "+strconv.Itoa(riverMaxwidth))
+	printStr(s, playfieldXoffset+25, playfieldYoffset+18, style, "Govenor Algo: "+strconv.Itoa(gamescoreAlgo))
+	printStr(s, playfieldXoffset, playfieldYoffset+20, style, ""+padLine)
+
 }
 
 func drawBox(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style) {
@@ -185,7 +208,6 @@ func playfieldDisplay(s tcell.Screen) {
 			s.SetContent(playerXpos+playfieldXoffset, playerYpos+playfieldYoffset, '#', nil, style) // yellow/green - Wall 1
 			s.Show()
 		}
-
 	}
 }
 
@@ -195,4 +217,87 @@ func playfieldGenerateNewLine() { // Generates new line for the playfield and mo
 			playfieldArray[i-1][j] = playfieldArray[i][j]
 		}
 	}
+	// Generate Max width of river +/1 a max of 2 Spaces
+	// Function to generate the river
+	switch rand.Intn(3) {
+	case 0:
+		riverWidth++
+	case 1:
+		riverWidth--
+	}
+	if riverWidth < riverMinwidth {
+		riverWidth++
+	}
+	if riverWidth > riverMaxwidth {
+		riverWidth--
+	}
+
+	// Generate the left boundry of the river
+	switch rand.Intn(3) {
+	case 0:
+		riverLeftboundry--
+		if riverLeftboundry < 1 {
+			riverLeftboundry++
+		}
+	case 1:
+		riverLeftboundry++
+		if riverLeftboundry+riverWidth+1 > 18 {
+			riverLeftboundry--
+		}
+	}
+
+	// Sanity Checking Playfield
+	if riverLeftboundry+riverWidth < 0 {
+		riverLeftboundry++
+	}
+
+	if riverLeftboundry < 0 {
+		riverLeftboundry = 0
+	}
+
+	if riverWidth < 0 {
+		riverWidth = 0
+	}
+
+	if 20-riverRightboundry < 0 {
+		riverRightboundry = 0
+	}
+
+	// Build padLine for River
+	riverRightboundry = riverLeftboundry + riverWidth
+	padLeftriver = strings.Repeat("1", riverLeftboundry)
+	padRiver = strings.Repeat("4", riverWidth)
+	padRightriver = strings.Repeat("3", 20-riverRightboundry)
+	padLine = padLeftriver + padRiver + padRightriver
+	padLength = len(padLine)
+
+	// Generate the obstacles, include 2 obstacle types, Randomly 5% chance
+	// Function to generate the obstacles
+
+	// Convert the padLine string into the last row of the playfieldArray
+	index := 0
+	for j := 0; j < 20; j++ {
+		num, err := strconv.Atoi(string(padLine[index]))
+		if err != nil {
+			panic(err)
+		}
+		playfieldArray[19][j] = num
+		index++
+	}
+}
+
+func playfieldUpdateStatus(s tcell.Screen) {
+	// Print the Score
+	style := tcell.StyleDefault.Foreground(tcell.ColorYellow.TrueColor()).Background(tcell.ColorBlack)
+	printStr(s, 3, playfieldYoffset, style, "Score: "+strconv.Itoa(gameScore))
+
+	// Print the Level
+	printStr(s, 3, playfieldYoffset+1, style, "Level: "+strconv.Itoa(gameLevel))
+
+	// Print the Speed
+	printStr(s, 3, playfieldYoffset+2, style, "Speed: "+strconv.Itoa(gameSpeed))
+
+	// Print the Mode
+	printStr(s, 3, playfieldYoffset+3, style, "Mode : "+strconv.Itoa(gameMode))
+
 }

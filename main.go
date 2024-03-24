@@ -16,6 +16,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"time"
 
@@ -34,19 +35,35 @@ var playfieldArray [20][20]int // 20x20 playfield array
 
 var playfieldTheme [10][10]string // 10x10 playfield theme array TODO: Implement this
 
-var wallLeftboundry int = 0   // Wall Left Boundry
-var wallRightboundry int = 19 // Wall Right Boundry
-var wallMinwidth int = 10     // Wall Minimum Width
-var wallMaxwidth int = 15     // Wall Maximum Width
+var riverLeftboundry int = 0   // River Left Boundry
+var riverRightboundry int = 18 // River Right Boundry
+var riverWidth int = 10        // River Width
+var riverMinwidth int = 12     // River Minimum Width
+var riverMaxwidth int = 16     // River Maximum Width
+
+var padLeftriver string = ""                // Pad Left Wall
+var padRightriver string = ""               // Pad Right Wall
+var padRiver string = ""                    // Pad River
+var padLine string = "11111111111111111111" // Pad Line
+var padLength int = 0                       // Pad Length
 
 var gameMode int = 0       // Game Mode
 var gameStart bool = false // Game Run
-var gameLevel int = 1      // Game Level
+var gameLevel int = 0      // Game Level
 var gameSpeed int = 1      // Game Speed
+var gameSeed int64 = 0     // Game Seed
+var gameScore int = 0      // Game Score
+var gamescoreAlgo int = 0  // Game Last Score
 
 var debug bool = true // Debug mode
 
+var quit = make(chan bool)
+
 func main() {
+
+	// Initialize the game
+	initializeGame()
+
 	// Initialize the screen
 	s, e := tcell.NewScreen()
 	if e != nil {
@@ -63,12 +80,11 @@ func main() {
 		Foreground(tcell.ColorWhite)
 	s.SetStyle(defStyle)
 
-	initializeGame()
 	go gameLoop(s) // Start the background game loop
 	playfieldBoxes(s)
 
 	menuDisplay(s)
-	gameRun(s) // Remove me after menu is implemented
+	// gameRun(s) // Remove me after menu is implemented
 }
 
 func gameRun(s tcell.Screen) { // Main function LOOP
@@ -124,7 +140,7 @@ func initializeGame() {
 	fmt.Println("Loading dropfile.................") // Load dropfile and check for errors door.sys, chain.txt, door32.sys, doorinfo.def
 	fmt.Println("Checking for other players.......") // Check for other players socket? pipe? file?
 	fmt.Println("Initializing game................") // Initialize game
+	rand.Seed(time.Now().UnixNano())                 // Seed the random number generator TODO: Is this settable? Should it be?
 	playfieldBuild()                                 // Build the initial playfield array
-
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 }
