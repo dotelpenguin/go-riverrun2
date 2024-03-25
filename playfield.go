@@ -42,12 +42,13 @@ func playfieldDebug(s tcell.Screen) {
 	drawBox(s, playfieldXoffset+22, playfieldYoffset-1, 79, playfieldYoffset+20, style)
 
 	// Lets find a better way to do this
+	// Ok you can do this by defining viewports and then drawing the text in the viewport.
+	// but that is a lot of work for a simple debug screen.
 	var padDebug string = strings.Repeat(" ", 35)
 
 	for i := 0; i < 20; i++ {
 		printStr(s, playfieldXoffset+25, playfieldYoffset+i, style, padDebug)
 	}
-	s.Show()
 
 	collision, message, value := gameCheckCollision()
 	printStr(s, playfieldXoffset+25, playfieldYoffset+1, style, "Debug Info")
@@ -76,6 +77,7 @@ func playfieldDebug(s tcell.Screen) {
 func drawBox(s tcell.Screen, x1, y1, x2, y2 int, style tcell.Style) {
 	// Double check to see if there isn't a native function for this.
 	// Draw the top and bottom
+	// Ok, there is a native function for this, but this is a good example of how to draw a box. And maybe one day I'll fix it.
 	for x := x1; x <= x2; x++ {
 		s.SetContent(x, y1, '-', nil, style)
 		s.SetContent(x, y2, '-', nil, style)
@@ -236,24 +238,57 @@ func playfieldGenerateNewLine() { // Generates new line for the playfield and mo
 	if riverLeftboundry+riverWidth < 0 {
 		riverLeftboundry++
 	}
-
 	if riverLeftboundry < 0 {
 		riverLeftboundry = 0
 	}
-
 	if riverWidth < 0 {
 		riverWidth = 0
 	}
-
 	if 20-riverRightboundry < 0 {
 		riverRightboundry = 0
 	}
 
 	// Build padLine for River
 	riverRightboundry = riverLeftboundry + riverWidth
-	padLeftriver = strings.Repeat("1", riverLeftboundry)
+
+	var padLeftriverP int = 0
+	var padLeftriverT string = ""
+	switch riverLeftboundry {
+	case 1:
+		padLeftriverP = 0
+	case 2:
+		padLeftriverP = 1
+		padLeftriverT = "3"
+	case 3:
+		padLeftriverP = 2
+		padLeftriverT = "23"
+	default:
+		padLeftriverP = 2
+		padLeftriverT = "23"
+	}
+
+	padLeftriver = strings.Repeat("1", riverLeftboundry-padLeftriverP) + padLeftriverT
+
 	padRiver = strings.Repeat("4", riverWidth)
-	padRightriver = strings.Repeat("3", 20-riverRightboundry)
+
+	var padRightriverP int = 0
+	var padRightriverT string = ""
+	switch 20 - riverRightboundry {
+	case 1:
+		padRightriverP = 0
+	case 2:
+		padRightriverP = 1
+		padRightriverT = "3"
+	case 3:
+		padRightriverP = 2
+		padRightriverT = "32"
+	default:
+		padRightriverP = 2
+		padRightriverT = "32"
+	}
+
+	padRightriver = padRightriverT + strings.Repeat("1", 20-riverRightboundry-padRightriverP)
+
 	padLine = padLeftriver + padRiver + padRightriver
 	padLength = len(padLine)
 

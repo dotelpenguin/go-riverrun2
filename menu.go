@@ -17,6 +17,7 @@ func menuDisplay(s tcell.Screen) {
 	for i := 0; i < 20; i++ {
 		printStr(s, playfieldXoffset, playfieldYoffset+i, style, padMenu)
 	}
+	s.Show()
 
 	printStr(s, playfieldXoffset+1, playfieldYoffset+1, style, "==================")
 	printStr(s, playfieldXoffset+1, playfieldYoffset+2, style, "       Menu")
@@ -69,6 +70,7 @@ func menuDisplay(s tcell.Screen) {
 					debug = !debug
 					return
 				default:
+					s.Show()
 					continue
 				}
 			}
